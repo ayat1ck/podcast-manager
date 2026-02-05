@@ -5,6 +5,7 @@ const API_URL = 'http://localhost:3000/api';
 let currentUser = null;
 let authToken = localStorage.getItem('token');
 let currentFilter = 'all';
+let allPodcasts = [];
 
 // ===== DOM Elements =====
 const pages = document.querySelectorAll('.page');
@@ -42,7 +43,7 @@ function initEventListeners() {
     // Hero buttons
     document.getElementById('heroGetStarted').addEventListener('click', () => {
         if (authToken) {
-            navigateTo('discover');
+            navigateTo('dashboard');
         } else {
             showAuthModal('register');
         }
@@ -83,6 +84,7 @@ function initEventListeners() {
     document.getElementById('loginFormElement').addEventListener('submit', handleLogin);
     document.getElementById('registerFormElement').addEventListener('submit', handleRegister);
     document.getElementById('podcastFormElement').addEventListener('submit', handleSavePodcast);
+    document.getElementById('profileFormElement').addEventListener('submit', handleUpdateProfile);
 
     // Search
     document.getElementById('searchBtn').addEventListener('click', searchPodcasts);
@@ -107,21 +109,32 @@ function initEventListeners() {
 // ===== Navigation =====
 function navigateTo(page) {
     // Check auth for protected pages
-    if ((page === 'discover' || page === 'library') && !authToken) {
+    const protectedPages = ['discover', 'library', 'dashboard', 'profile'];
+    if (protectedPages.includes(page) && !authToken) {
         showAuthModal('login');
         showToast('Please login to access this page', 'error');
         return;
+    }
+
+    // If logged in and going to home, redirect to dashboard
+    if (page === 'home' && authToken) {
+        page = 'dashboard';
     }
 
     pages.forEach(p => p.classList.remove('active'));
     navLinks.forEach(l => l.classList.remove('active'));
 
     document.getElementById(`page-${page}`).classList.add('active');
-    document.querySelector(`[data-page="${page}"]`).classList.add('active');
+    const activeNavLink = document.querySelector(`[data-page="${page}"]`);
+    if (activeNavLink) activeNavLink.classList.add('active');
 
     // Load page data
     if (page === 'library') {
         loadLibrary();
+    } else if (page === 'dashboard') {
+        loadDashboard();
+    } else if (page === 'profile') {
+        loadProfile();
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -144,6 +157,8 @@ async function fetchProfile() {
             const data = await res.json();
             currentUser = data.data;
             updateUIForAuth();
+            // Auto-navigate to dashboard if logged in
+            navigateTo('dashboard');
         } else {
             logout();
         }
@@ -154,13 +169,33 @@ async function fetchProfile() {
 
 function updateUIForAuth() {
     if (currentUser) {
+        // Hide auth buttons, show user info
         navAuth.classList.add('hidden');
         navUser.classList.remove('hidden');
         document.getElementById('userName').textContent = currentUser.username;
         document.getElementById('userAvatar').textContent = currentUser.username.charAt(0).toUpperCase();
+
+        // Show/hide nav links for logged in users
+        document.getElementById('navDashboard').classList.remove('hidden');
+        document.getElementById('navProfile').classList.remove('hidden');
+
+        // Update dashboard username
+        const dashboardUsername = document.getElementById('dashboardUsername');
+        if (dashboardUsername) {
+            dashboardUsername.textContent = currentUser.username;
+        }
+
+        // Update current date
+        const currentDate = document.getElementById('currentDate');
+        if (currentDate) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDate.textContent = new Date().toLocaleDateString('en-US', options);
+        }
     } else {
         navAuth.classList.remove('hidden');
         navUser.classList.add('hidden');
+        document.getElementById('navDashboard').classList.add('hidden');
+        document.getElementById('navProfile').classList.add('hidden');
     }
 }
 
@@ -184,8 +219,8 @@ async function handleLogin(e) {
             currentUser = data.data;
             updateUIForAuth();
             hideModal(authModal);
-            showToast('Welcome back! 👋', 'success');
-            navigateTo('discover');
+            showToast(`Welcome back, ${currentUser.username}! 👋`, 'success');
+            navigateTo('dashboard');
         } else {
             showToast(data.message || 'Login failed', 'error');
         }
@@ -215,8 +250,8 @@ async function handleRegister(e) {
             currentUser = data.data;
             updateUIForAuth();
             hideModal(authModal);
-            showToast('Account created! Welcome! 🎉', 'success');
-            navigateTo('discover');
+            showToast(`Welcome, ${currentUser.username}! 🎉`, 'success');
+            navigateTo('dashboard');
         } else {
             showToast(data.message || 'Registration failed', 'error');
         }
@@ -228,10 +263,100 @@ async function handleRegister(e) {
 function logout() {
     authToken = null;
     currentUser = null;
+    allPodcasts = [];
     localStorage.removeItem('token');
     updateUIForAuth();
     navigateTo('home');
+    // Make sure home page is actually shown
+    pages.forEach(p => p.classList.remove('active'));
+    document.getElementById('page-home').classList.add('active');
     showToast('Logged out successfully', 'success');
+}
+
+// ===== Dashboard =====
+async function loadDashboard() {
+    try {
+        const res = await fetch(`${API_URL}/podcasts`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            allPodcasts = data.data;
+
+            // Update stats
+            document.getElementById('totalPodcasts').textContent = allPodcasts.length;
+            document.getElementById('listeningCount').textContent = allPodcasts.filter(p => p.status === 'listening').length;
+            document.getElementById('completedCount').textContent = allPodcasts.filter(p => p.status === 'completed').length;
+            document.getElementById('wishlistCount').textContent = allPodcasts.filter(p => p.status === 'wishlist').length;
+
+            // Update recent podcasts (last 4)
+            const recentContainer = document.getElementById('recentPodcasts');
+            const recent = allPodcasts.slice(-4).reverse();
+
+            if (recent.length > 0) {
+                recentContainer.innerHTML = recent.map(podcast => `
+          <div class="recent-item">
+            <div class="recent-img">
+              ${podcast.imageUrl ? `<img src="${podcast.imageUrl}" alt="${podcast.title}">` : '🎙️'}
+            </div>
+            <div class="recent-info">
+              <h4>${escapeHtml(podcast.title)}</h4>
+              <p>${escapeHtml(podcast.author)}</p>
+            </div>
+          </div>
+        `).join('');
+            } else {
+                recentContainer.innerHTML = `<p class="text-muted">No podcasts yet. Start by discovering some!</p>`;
+            }
+        }
+    } catch (error) {
+        console.error('Dashboard load error:', error);
+    }
+}
+
+// ===== Profile =====
+function loadProfile() {
+    if (currentUser) {
+        document.getElementById('profileUsername').value = currentUser.username;
+        document.getElementById('profileEmail').value = currentUser.email;
+        document.getElementById('profileAvatar').textContent = currentUser.username.charAt(0).toUpperCase();
+        const createdDate = new Date(currentUser.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+        document.getElementById('profileCreatedAt').value = createdDate;
+    }
+}
+
+async function handleUpdateProfile(e) {
+    e.preventDefault();
+
+    const username = document.getElementById('profileUsername').value;
+    const email = document.getElementById('profileEmail').value;
+
+    try {
+        const res = await fetch(`${API_URL}/users/profile`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: JSON.stringify({ username, email })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            currentUser = data.data;
+            updateUIForAuth();
+            showToast('Profile updated successfully! ✨', 'success');
+        } else {
+            showToast(data.message || 'Failed to update profile', 'error');
+        }
+    } catch (error) {
+        showToast('Connection error. Please try again.', 'error');
+    }
 }
 
 // ===== Modals =====
@@ -259,8 +384,8 @@ function showPodcastModal(podcast = null) {
     document.getElementById('podcastRating').value = podcast?.rating || '';
     document.getElementById('podcastStatus').value = podcast?.status || 'wishlist';
 
-    document.getElementById('podcastModalTitle').textContent = podcast ? 'Edit Podcast' : 'Save Podcast';
-    document.getElementById('savePodcastBtn').textContent = podcast ? 'Update Podcast' : 'Save Podcast';
+    document.getElementById('podcastModalTitle').textContent = podcast?._id ? 'Edit Podcast' : 'Add Podcast';
+    document.getElementById('savePodcastBtn').textContent = podcast?._id ? 'Update Podcast' : 'Save Podcast';
 
     podcastModal.classList.add('active');
 }
@@ -344,6 +469,7 @@ async function loadLibrary() {
 
         if (res.ok) {
             let podcasts = data.data;
+            allPodcasts = podcasts;
 
             // Apply filter
             if (currentFilter !== 'all') {
@@ -419,6 +545,7 @@ async function deletePodcast(id) {
         if (res.ok) {
             showToast('Podcast deleted', 'success');
             loadLibrary();
+            loadDashboard(); // Update stats
         } else {
             showToast('Failed to delete podcast', 'error');
         }
@@ -459,6 +586,7 @@ async function handleSavePodcast(e) {
             hideModal(podcastModal);
             showToast(id ? 'Podcast updated!' : 'Podcast saved!', 'success');
             loadLibrary();
+            loadDashboard(); // Update stats
             navigateTo('library');
         } else {
             showToast(data.message || 'Failed to save podcast', 'error');
@@ -493,3 +621,4 @@ window.saveFromItunes = saveFromItunes;
 window.editPodcast = editPodcast;
 window.deletePodcast = deletePodcast;
 window.navigateTo = navigateTo;
+window.showPodcastModal = showPodcastModal;

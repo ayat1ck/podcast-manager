@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Podcast Manager - Your Personal Podcast Collection</title>
-  <meta name="description" content="Manage your podcast collection, discover new shows, and track your listening progress">
+  <meta name="description"
+    content="Manage your podcast collection, discover new shows, and track your listening progress">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <!-- Background Animation -->
   <div class="bg-gradient"></div>
@@ -25,8 +29,10 @@
     </div>
     <div class="nav-links" id="nav-links">
       <a href="#" class="nav-link active" data-page="home">Home</a>
+      <a href="#" class="nav-link hidden" data-page="dashboard" id="navDashboard">Dashboard</a>
       <a href="#" class="nav-link" data-page="discover">Discover</a>
       <a href="#" class="nav-link" data-page="library">My Library</a>
+      <a href="#" class="nav-link hidden" data-page="profile" id="navProfile">Profile</a>
     </div>
     <div class="nav-auth" id="nav-auth">
       <button class="btn btn-ghost" id="loginBtn">Login</button>
@@ -41,8 +47,8 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    
-    <!-- Home Page (Landing) -->
+
+    <!-- Home Page (Landing - for non-logged users) -->
     <section class="page active" id="page-home">
       <div class="hero">
         <div class="hero-content">
@@ -51,14 +57,14 @@
             <span class="gradient-text">Starts Here</span>
           </h1>
           <p class="hero-subtitle">
-            Discover, save, and organize your favorite podcasts. 
+            Discover, save, and organize your favorite podcasts.
             Track your listening progress and never miss an episode.
           </p>
           <div class="hero-actions">
             <button class="btn btn-primary btn-lg" id="heroGetStarted">
               <span>Start Exploring</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
+                <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </button>
             <button class="btn btn-glass btn-lg" id="heroLearnMore">
@@ -121,18 +127,121 @@
       </div>
     </section>
 
+    <!-- Dashboard Page (for logged-in users) -->
+    <section class="page" id="page-dashboard">
+      <div class="dashboard-header">
+        <div class="welcome-section">
+          <h1 class="welcome-title">Welcome back, <span class="gradient-text" id="dashboardUsername">User</span>! 👋
+          </h1>
+          <p class="welcome-subtitle">Here's your podcast activity overview</p>
+        </div>
+        <div class="dashboard-date" id="currentDate"></div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">📚</div>
+          <div class="stat-info">
+            <span class="stat-number" id="totalPodcasts">0</span>
+            <span class="stat-label">Total Podcasts</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">🎧</div>
+          <div class="stat-info">
+            <span class="stat-number" id="listeningCount">0</span>
+            <span class="stat-label">Currently Listening</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">✅</div>
+          <div class="stat-info">
+            <span class="stat-number" id="completedCount">0</span>
+            <span class="stat-label">Completed</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #f472b6, #ec4899);">💫</div>
+          <div class="stat-info">
+            <span class="stat-number" id="wishlistCount">0</span>
+            <span class="stat-label">Wishlist</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h2 class="section-title-sm">Quick Actions</h2>
+        <div class="actions-grid">
+          <button class="action-card" onclick="navigateTo('discover')">
+            <div class="action-icon">🔍</div>
+            <span>Discover New Podcasts</span>
+          </button>
+          <button class="action-card" onclick="navigateTo('library')">
+            <div class="action-icon">📚</div>
+            <span>View My Library</span>
+          </button>
+          <button class="action-card" onclick="showPodcastModal()">
+            <div class="action-icon">➕</div>
+            <span>Add Podcast Manually</span>
+          </button>
+          <button class="action-card" onclick="navigateTo('profile')">
+            <div class="action-icon">👤</div>
+            <span>Edit Profile</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="recent-section">
+        <h2 class="section-title-sm">Recently Added</h2>
+        <div class="recent-podcasts" id="recentPodcasts">
+          <p class="text-muted">Loading...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile Page -->
+    <section class="page" id="page-profile">
+      <div class="page-header">
+        <h1>My Profile</h1>
+        <p>Manage your account settings</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-avatar-large" id="profileAvatar">U</div>
+        <form id="profileFormElement">
+          <div class="form-group">
+            <label for="profileUsername">Username</label>
+            <input type="text" id="profileUsername" placeholder="Username" required minlength="3">
+          </div>
+          <div class="form-group">
+            <label for="profileEmail">Email</label>
+            <input type="email" id="profileEmail" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label>Member Since</label>
+            <input type="text" id="profileCreatedAt" disabled>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Update Profile</button>
+        </form>
+      </div>
+    </section>
+
     <!-- Discover Page (iTunes Search) -->
     <section class="page" id="page-discover">
       <div class="page-header">
         <h1>Discover Podcasts</h1>
         <p>Search and explore podcasts from iTunes</p>
       </div>
-      
+
       <div class="search-container">
         <div class="search-box">
-          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
           </svg>
           <input type="text" id="searchInput" placeholder="Search for podcasts..." class="search-input">
           <button class="btn btn-primary" id="searchBtn">Search</button>
@@ -176,7 +285,7 @@
   <div class="modal-overlay" id="authModal">
     <div class="modal glass-card">
       <button class="modal-close" id="closeModal">&times;</button>
-      
+
       <!-- Login Form -->
       <div class="auth-form" id="loginForm">
         <div class="form-header">
@@ -285,4 +394,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>
