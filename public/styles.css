@@ -188,6 +188,10 @@ body {
   display: none;
 }
 
+.nav-auth.hidden {
+  display: none;
+}
+
 .user-avatar {
   width: 40px;
   height: 40px;
