@@ -383,6 +383,7 @@ function showPodcastModal(podcast = null) {
     document.getElementById('podcastImageUrl').value = podcast?.imageUrl || '';
     document.getElementById('podcastRating').value = podcast?.rating || '';
     document.getElementById('podcastStatus').value = podcast?.status || 'wishlist';
+    document.getElementById('podcastListenUrl').value = podcast?.listenUrl || '';
 
     document.getElementById('podcastModalTitle').textContent = podcast?._id ? 'Edit Podcast' : 'Add Podcast';
     document.getElementById('savePodcastBtn').textContent = podcast?._id ? 'Update Podcast' : 'Save Podcast';
@@ -421,6 +422,7 @@ async function searchPodcasts() {
               <button class="btn btn-primary" onclick="saveFromItunes(${JSON.stringify(podcast).replace(/"/g, '&quot;')})">
                 + Save
               </button>
+              ${podcast.listenUrl ? `<a href="${podcast.listenUrl}" target="_blank" class="btn btn-glass">🎧 Listen</a>` : ''}
             </div>
           </div>
         </div>
@@ -451,7 +453,8 @@ function saveFromItunes(podcast) {
         title: podcast.title,
         author: podcast.author,
         description: podcast.description || '',
-        imageUrl: podcast.imageUrl || ''
+        imageUrl: podcast.imageUrl || '',
+        listenUrl: podcast.listenUrl || ''
     });
 }
 
@@ -489,6 +492,7 @@ async function loadLibrary() {
                 <span class="podcast-rating">${podcast.rating ? '⭐'.repeat(podcast.rating) : 'No rating'}</span>
                 <span class="podcast-status status-${podcast.status}">${capitalizeFirst(podcast.status)}</span>
               </div>
+              ${podcast.listenUrl ? `<a href="${podcast.listenUrl}" target="_blank" class="btn btn-listen">🎧 Listen on Apple Podcasts</a>` : ''}
               <div class="podcast-card-actions">
                 <button class="btn btn-glass btn-sm" onclick="editPodcast('${podcast._id}')">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="deletePodcast('${podcast._id}')">Delete</button>
@@ -564,7 +568,8 @@ async function handleSavePodcast(e) {
         description: document.getElementById('podcastDescription').value,
         imageUrl: document.getElementById('podcastImageUrl').value,
         rating: document.getElementById('podcastRating').value || null,
-        status: document.getElementById('podcastStatus').value
+        status: document.getElementById('podcastStatus').value,
+        listenUrl: document.getElementById('podcastListenUrl').value
     };
 
     try {

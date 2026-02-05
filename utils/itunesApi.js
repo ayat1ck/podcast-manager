@@ -28,7 +28,8 @@ const searchItunesPodcasts = async (term, limit = 10) => {
             feedUrl: podcast.feedUrl,
             genres: podcast.genres,
             releaseDate: podcast.releaseDate,
-            episodeCount: podcast.trackCount
+            episodeCount: podcast.trackCount,
+            listenUrl: podcast.collectionViewUrl || podcast.trackViewUrl
         }));
 
         return podcasts;

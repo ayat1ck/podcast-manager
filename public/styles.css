@@ -284,6 +284,26 @@ body {
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
+.btn-listen {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #fc3c44, #fa243c);
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: var(--transition);
+}
+
+.btn-listen:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(252, 60, 68, 0.4);
+}
+
 /* ===== Main Content ===== */
 .main-content {
   padding-top: 72px;
