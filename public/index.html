@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Podcast Manager - Your Personal Podcast Collection</title>
+  <meta name="description" content="Manage your podcast collection, discover new shows, and track your listening progress">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background Animation -->
+  <div class="bg-gradient"></div>
+  <div class="bg-blur-1"></div>
+  <div class="bg-blur-2"></div>
+  <div class="bg-blur-3"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">🎙️</span>
+      <span class="brand-text">PodcastManager</span>
+    </div>
+    <div class="nav-links" id="nav-links">
+      <a href="#" class="nav-link active" data-page="home">Home</a>
+      <a href="#" class="nav-link" data-page="discover">Discover</a>
+      <a href="#" class="nav-link" data-page="library">My Library</a>
+    </div>
+    <div class="nav-auth" id="nav-auth">
+      <button class="btn btn-ghost" id="loginBtn">Login</button>
+      <button class="btn btn-primary" id="registerBtn">Get Started</button>
+    </div>
+    <div class="nav-user hidden" id="nav-user">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <span class="user-name" id="userName">User</span>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Home Page (Landing) -->
+    <section class="page active" id="page-home">
+      <div class="hero">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            Your Podcast Journey
+            <span class="gradient-text">Starts Here</span>
+          </h1>
+          <p class="hero-subtitle">
+            Discover, save, and organize your favorite podcasts. 
+            Track your listening progress and never miss an episode.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" id="heroGetStarted">
+              <span>Start Exploring</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+            <button class="btn btn-glass btn-lg" id="heroLearnMore">
+              Learn More
+            </button>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="podcast-cards-stack">
+            <div class="podcast-card-preview card-1">
+              <div class="card-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🎧</div>
+              <div class="card-info">
+                <span class="card-title">Tech Talk Daily</span>
+                <span class="card-author">Tech Network</span>
+              </div>
+            </div>
+            <div class="podcast-card-preview card-2">
+              <div class="card-img" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">🎤</div>
+              <div class="card-info">
+                <span class="card-title">Creative Minds</span>
+                <span class="card-author">Creative Studios</span>
+              </div>
+            </div>
+            <div class="podcast-card-preview card-3">
+              <div class="card-img" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">🌍</div>
+              <div class="card-info">
+                <span class="card-title">World Stories</span>
+                <span class="card-author">Global Media</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Section -->
+      <div class="features">
+        <h2 class="section-title">Why Choose Us</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Discover</h3>
+            <p>Search millions of podcasts via iTunes integration</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3>Organize</h3>
+            <p>Create your personal library with custom status</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⭐</div>
+            <h3>Rate</h3>
+            <p>Rate podcasts and track your favorites</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Secure</h3>
+            <p>Your data is protected with JWT authentication</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Discover Page (iTunes Search) -->
+    <section class="page" id="page-discover">
+      <div class="page-header">
+        <h1>Discover Podcasts</h1>
+        <p>Search and explore podcasts from iTunes</p>
+      </div>
+      
+      <div class="search-container">
+        <div class="search-box">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search for podcasts..." class="search-input">
+          <button class="btn btn-primary" id="searchBtn">Search</button>
+        </div>
+      </div>
+
+      <div class="podcasts-grid" id="searchResults">
+        <div class="empty-state">
+          <div class="empty-icon">🎙️</div>
+          <h3>Search for Podcasts</h3>
+          <p>Enter a keyword to discover amazing podcasts</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Library Page -->
+    <section class="page" id="page-library">
+      <div class="page-header">
+        <h1>My Library</h1>
+        <p>Your saved podcasts collection</p>
+        <div class="library-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="listening">Listening</button>
+          <button class="filter-btn" data-filter="completed">Completed</button>
+          <button class="filter-btn" data-filter="wishlist">Wishlist</button>
+        </div>
+      </div>
+
+      <div class="podcasts-grid" id="libraryGrid">
+        <div class="empty-state" id="libraryEmpty">
+          <div class="empty-icon">📚</div>
+          <h3>Your library is empty</h3>
+          <p>Discover and save podcasts to build your collection</p>
+          <button class="btn btn-primary" id="goToDiscover">Explore Podcasts</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal glass-card">
+      <button class="modal-close" id="closeModal">&times;</button>
+      
+      <!-- Login Form -->
+      <div class="auth-form" id="loginForm">
+        <div class="form-header">
+          <h2>Welcome Back</h2>
+          <p>Sign in to your account</p>
+        </div>
+        <form id="loginFormElement">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+        <p class="auth-switch">
+          Don't have an account? <a href="#" id="showRegister">Create one</a>
+        </p>
+      </div>
+
+      <!-- Register Form -->
+      <div class="auth-form hidden" id="registerForm">
+        <div class="form-header">
+          <h2>Create Account</h2>
+          <p>Start your podcast journey</p>
+        </div>
+        <form id="registerFormElement">
+          <div class="form-group">
+            <label for="registerUsername">Username</label>
+            <input type="text" id="registerUsername" placeholder="johndoe" required minlength="3">
+          </div>
+          <div class="form-group">
+            <label for="registerEmail">Email</label>
+            <input type="email" id="registerEmail" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Password</label>
+            <input type="password" id="registerPassword" placeholder="••••••••" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+        </form>
+        <p class="auth-switch">
+          Already have an account? <a href="#" id="showLogin">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Podcast Modal -->
+  <div class="modal-overlay" id="podcastModal">
+    <div class="modal glass-card">
+      <button class="modal-close" id="closePodcastModal">&times;</button>
+      <div class="form-header">
+        <h2 id="podcastModalTitle">Save Podcast</h2>
+      </div>
+      <form id="podcastFormElement">
+        <input type="hidden" id="podcastId">
+        <div class="form-group">
+          <label for="podcastTitle">Title</label>
+          <input type="text" id="podcastTitle" placeholder="Podcast title" required>
+        </div>
+        <div class="form-group">
+          <label for="podcastAuthor">Author</label>
+          <input type="text" id="podcastAuthor" placeholder="Podcast author" required>
+        </div>
+        <div class="form-group">
+          <label for="podcastDescription">Description</label>
+          <textarea id="podcastDescription" placeholder="Description..." rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="podcastImageUrl">Image URL</label>
+          <input type="url" id="podcastImageUrl" placeholder="https://...">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="podcastRating">Rating</label>
+            <select id="podcastRating">
+              <option value="">No rating</option>
+              <option value="1">⭐ 1</option>
+              <option value="2">⭐ 2</option>
+              <option value="3">⭐ 3</option>
+              <option value="4">⭐ 4</option>
+              <option value="5">⭐ 5</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="podcastStatus">Status</label>
+            <select id="podcastStatus">
+              <option value="wishlist">Wishlist</option>
+              <option value="listening">Listening</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="savePodcastBtn">Save Podcast</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span class="toast-message"></span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
