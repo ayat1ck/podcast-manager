@@ -31,10 +31,6 @@ const podcastSchema = new mongoose.Schema({
         enum: ['listening', 'completed', 'wishlist'],
         default: 'wishlist'
     },
-    listenUrl: {
-        type: String,
-        default: ''
-    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
